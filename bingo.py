@@ -153,22 +153,24 @@ def new_game():
     sleep(2)
 
     while(1):
+        flag = 1
         i = 0
         while(i<NUM_PLAYERS):
+            if len(VICTORY_LIST) == NUM_PLAYERS - 1:
+                display_results(VICTORY_LIST,PLAYER_NAME_DICT) #--> result display 
+                flag = 2
+                break
             if i not in VICTORY_LIST:
-                if len(VICTORY_LIST) == NUM_PLAYERS - 1:
-                    break
                 clear()
                 print("[INFO]","Player ",PLAYER_NAME_DICT[i]," PLAYER ID ",i," chance :")
                 take_chance(NUM_PLAYERS,STORE_DICT,i) #--> get the number , call modify_grid , then show the grid
-                grid_show(STORE_DICT[i])
-                sleep(5)
                 check_bingo(VICTORY_LIST,PLAYER_PASSBOOK,STORE_DICT,NUM_PLAYERS,PLAYER_DICT) #--> checks if player won at the instance returns t/f
+                grid_show(STORE_DICT[i])
+                sleep(2)
                 i = i + 1
-        if len(VICTORY_LIST) == NUM_PLAYERS - 1:
-            display_results(VICTORY_LIST,PLAYER_NAME_DICT) #--> result display 
+        if flag == 2:
             break
-    sleep(15)
+    sleep(5)
 
     mainmenu()
 
@@ -215,6 +217,7 @@ def display_results(VICTORY_LIST,PLAYER_NAME_DICT):
 def check_bingo(VICTORY_LIST,PLAYER_PASSBOOK,STORE_DICT,NUM_PLAYERS,PLAYER_DICT):
     for player_id in range(NUM_PLAYERS):
         temp = STORE_DICT[player_id].flatten()
+
         for i in range(5):
             if temp[i+0] == temp[i+5] == temp[i+10] == temp[i+15] == temp[i+20]:
                 if PLAYER_DICT[player_id].check_col(i) == False:
@@ -222,7 +225,7 @@ def check_bingo(VICTORY_LIST,PLAYER_PASSBOOK,STORE_DICT,NUM_PLAYERS,PLAYER_DICT)
                     PLAYER_PASSBOOK[player_id] = PLAYER_PASSBOOK[player_id] + 1
                     if PLAYER_PASSBOOK[player_id] == 5:
                         VICTORY_LIST.append(player_id)
-                        return
+
         for i in range(0,21,5):
             if temp[i+0] == temp[i+1] == temp[i+2] == temp[i+3] == temp[i+4]:
                 if PLAYER_DICT[player_id].check_row(i) == False:
@@ -230,22 +233,20 @@ def check_bingo(VICTORY_LIST,PLAYER_PASSBOOK,STORE_DICT,NUM_PLAYERS,PLAYER_DICT)
                     PLAYER_PASSBOOK[player_id] = PLAYER_PASSBOOK[player_id] + 1
                     if PLAYER_PASSBOOK[player_id] == 5:
                         VICTORY_LIST.append(player_id)
-                        return
+
         if PLAYER_DICT[player_id].check_dgl(0) == False:
-            PLAYER_DICT[player_id].load_dgl(0)
             if temp[0] == temp[6] == temp[12] == temp[18] == temp[24]:
+                    PLAYER_DICT[player_id].load_dgl(0)
                     PLAYER_PASSBOOK[player_id] = PLAYER_PASSBOOK[player_id] + 1
                     if PLAYER_PASSBOOK[player_id] == 5:
                         VICTORY_LIST.append(player_id)
-                        return
+
         if PLAYER_DICT[player_id].check_dgl(4) == False:
-            PLAYER_DICT[player_id].load_dgl(4)
             if temp[4] == temp[8] == temp[12] == temp[16] == temp[20]:
+                    PLAYER_DICT[player_id].load_dgl(4)
                     PLAYER_PASSBOOK[player_id] = PLAYER_PASSBOOK[player_id] + 1
                     if PLAYER_PASSBOOK[player_id] == 5:
                         VICTORY_LIST.append(player_id)
-                        return
-    return
 
 if __name__ == "__main__":
     mainmenu()
