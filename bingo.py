@@ -1,5 +1,5 @@
 # bingo.py
-
+# Author : Arjun R
 # packages
 import numpy as np
 from tabulate import tabulate as tb
