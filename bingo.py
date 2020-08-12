@@ -1,5 +1,5 @@
 # bingo.py
-# Author : Arjun R
+
 # packages
 import numpy as np
 from tabulate import tabulate as tb
@@ -18,6 +18,7 @@ class player:
         self.player_passbook = 0 # B-I-N-G-O counter
         self.player_name = "" # player name
         self.player_matrix_type = "a"  # matrix fill type (a/m)
+        self.alternator = True
 
     # bingo matrix 2-D array
     def player_matrix(self):
@@ -72,12 +73,191 @@ class player:
 
     # machine logic
     def computerlogic(self):
-        choice = np.random.choice(self.player_array,1)[0] 
-        if choice == 0:
-            self.computerlogic()
-        return choice
+        blk_rx = []
+        blk_cx = []
+        prior = -1
+        choose_r = True
+        choose_c = False
+
+        results = [ np.count_nonzero(self.player_matrix() == 0,axis=1), np.count_nonzero(self.player_matrix() == 0,axis=0) ]
+        if results[0][np.argmax(results[0])] == 5:
+            results[0][np.argmax(results[0])] = -1
+        if results[1][np.argmax(results[1])] == 5:
+            results[1][np.argmax(results[1])] = -1 
+                
+        if max(results[0]) == max(results[1]):
+            if self.alternator == True:
+                prior = np.argmax(results[1])
+                choose_r = True
+                choose_c = False
+                self.alternator = False
+            else:
+                prior = np.argmax(results[1])
+                choose_r = False
+                choose_c = True
+                self.alternator = True
+        elif max(results[0]) > max(results[1]):
+            prior = np.argmax(results[0])
+            choose_r = True
+            choose_c = False
+            self.alternator = False
+        else:
+            prior = np.argmax(results[1])
+            choose_r = False
+            choose_c = True
+            self.alternator = True
 
 
+        for i in range(5):
+            if prior >= 0 and prior not in blk_rx:
+                i  = prior
+            if i not in blk_rx and choose_r:
+                
+                if self.player_matrix()[i][0] == 0 or self.player_matrix()[i][1] == 0 or self.player_matrix()[i][2] == 0 or self.player_matrix()[i][3] == 0 or self.player_matrix()[i][4] == 0:
+                    if self.player_matrix()[i][0] == 0 and self.player_matrix()[i][1] == 0 and self.player_matrix()[i][2] == 0 and self.player_matrix()[i][3] == 0 and self.player_matrix()[i][4] == 0:
+                        blk_rx.append(i)
+                    elif self.player_matrix()[i][0] == 0 and self.player_matrix()[i][1] == 0 and self.player_matrix()[i][2] == 0 and self.player_matrix()[i][3] == 0:
+                        blk_rx.append(i)
+                        return self.player_matrix()[i][4]
+                    elif self.player_matrix()[i][0] == 0 and self.player_matrix()[i][1] == 0 and self.player_matrix()[i][2] == 0 and self.player_matrix()[i][4] == 0:
+                        blk_rx.append(i)
+                        return self.player_matrix()[i][3]
+                    elif self.player_matrix()[i][0] == 0 and self.player_matrix()[i][1] == 0 and self.player_matrix()[i][3] == 0 and self.player_matrix()[i][4] == 0:
+                        blk_rx.append(i)
+                        return self.player_matrix()[i][2]
+                    elif self.player_matrix()[i][0] == 0 and self.player_matrix()[i][2] == 0 and self.player_matrix()[i][3] == 0 and self.player_matrix()[i][4] == 0:
+                        blk_rx.append(i)
+                        return self.player_matrix()[i][1]
+                    elif self.player_matrix()[i][1] == 0 and self.player_matrix()[i][2] == 0 and self.player_matrix()[i][3] == 0 and self.player_matrix()[i][4] == 0:
+                        blk_rx.append(i)
+                        return self.player_matrix()[i][0]
+                    elif self.player_matrix()[i][0] == 0 and self.player_matrix()[i][1] == 0 and self.player_matrix()[i][2] == 0:
+                        return self.player_matrix()[i][4]
+                    elif self.player_matrix()[i][0] == 0 and self.player_matrix()[i][1] == 0 and self.player_matrix()[i][3] == 0:
+                        return self.player_matrix()[i][3]
+                    elif self.player_matrix()[i][0] == 0 and self.player_matrix()[i][1] == 0 and self.player_matrix()[i][4] == 0:
+                        return self.player_matrix()[i][2]
+                    elif self.player_matrix()[i][0] == 0 and self.player_matrix()[i][2] == 0 and self.player_matrix()[i][3] == 0:
+                        return self.player_matrix()[i][4]
+                    elif self.player_matrix()[i][0] == 0 and self.player_matrix()[i][2] == 0 and self.player_matrix()[i][4] == 0:
+                        return self.player_matrix()[i][3]
+                    elif self.player_matrix()[i][0] == 0 and self.player_matrix()[i][3] == 0 and self.player_matrix()[i][4] == 0:
+                        return self.player_matrix()[i][1]
+                    elif self.player_matrix()[i][1] == 0 and self.player_matrix()[i][2] == 0 and self.player_matrix()[i][3] == 0:
+                        return self.player_matrix()[i][4]
+                    elif self.player_matrix()[i][1] == 0 and self.player_matrix()[i][2] == 0 and self.player_matrix()[i][4] == 0:
+                        return self.player_matrix()[i][0]
+                    elif self.player_matrix()[i][1] == 0 and self.player_matrix()[i][3] == 0 and self.player_matrix()[i][4] == 0:
+                        return self.player_matrix()[i][0]
+                    elif self.player_matrix()[i][2] == 0 and self.player_matrix()[i][3] == 0 and self.player_matrix()[i][4] == 0:
+                        return self.player_matrix()[i][0]
+                    elif self.player_matrix()[i][0] == 0 and self.player_matrix()[i][1] == 0:
+                        return self.player_matrix()[i][3]
+                    elif self.player_matrix()[i][0] == 0 and self.player_matrix()[i][2] == 0:
+                        return self.player_matrix()[i][3]
+                    elif self.player_matrix()[i][0] == 0 and self.player_matrix()[i][3] == 0:
+                        return self.player_matrix()[i][4]
+                    elif self.player_matrix()[i][0] == 0 and self.player_matrix()[i][4] == 0:
+                        return self.player_matrix()[i][2]
+                    elif self.player_matrix()[i][1] == 0 and self.player_matrix()[i][2] == 0:
+                        return self.player_matrix()[i][3]
+                    elif self.player_matrix()[i][1] == 0 and self.player_matrix()[i][3] == 0:
+                        return self.player_matrix()[i][4]
+                    elif self.player_matrix()[i][1] == 0 and self.player_matrix()[i][4] == 0:
+                        return self.player_matrix()[i][0]
+                    elif self.player_matrix()[i][2] == 0 and self.player_matrix()[i][3] == 0:
+                        return self.player_matrix()[i][4]
+                    elif self.player_matrix()[i][2] == 0 and self.player_matrix()[i][4] == 0:
+                        return self.player_matrix()[i][0]
+                    elif self.player_matrix()[i][3] == 0 and self.player_matrix()[i][4] == 0:
+                        return self.player_matrix()[i][2]
+                    elif self.player_matrix()[i][0] == 0:
+                        return self.player_matrix()[i][1]
+                    elif self.player_matrix()[i][1] == 0:
+                        return self.player_matrix()[i][2]
+                    elif self.player_matrix()[i][2] == 0:
+                        return self.player_matrix()[i][3]
+                    elif self.player_matrix()[i][3] == 0:
+                        return self.player_matrix()[i][4]
+                    elif self.player_matrix()[i][4] == 0:
+                        return self.player_matrix()[i][0]
+                else:
+                    return np.random.choice(self.player_array,1)[0]
+
+                # end row check
+        for i in range(5):
+            if prior >= 0 and prior not in blk_cx:
+                    i  = prior
+            if i not in blk_cx and choose_c:
+                if self.player_matrix()[0][i] == 0 or self.player_matrix()[1][i] == 0 or self.player_matrix()[2][i] == 0 or self.player_matrix()[3][i] == 0 or self.player_matrix()[4][i] == 0:
+                    if self.player_matrix()[0][i] == 0 and self.player_matrix()[1][i] == 0 and self.player_matrix()[2][i] == 0 and self.player_matrix()[3][i] == 0 and self.player_matrix()[4][i] == 0:
+                        blk_cx.append(i)
+                    elif self.player_matrix()[0][i] == 0 and self.player_matrix()[1][i] == 0 and self.player_matrix()[2][i] == 0 and self.player_matrix()[3][i] == 0:
+                        blk_cx.append(i)
+                        return self.player_matrix()[4][i]
+                    elif self.player_matrix()[0][i] == 0 and self.player_matrix()[1][i] == 0 and self.player_matrix()[2][i] == 0 and self.player_matrix()[4][i] == 0:
+                        blk_cx.append(i)
+                        return self.player_matrix()[3][i]
+                    elif self.player_matrix()[0][i] == 0 and self.player_matrix()[1][i] == 0 and self.player_matrix()[3][i] == 0 and self.player_matrix()[4][i] == 0:
+                        blk_cx.append(i)
+                        return self.player_matrix()[2][i]
+                    elif self.player_matrix()[0][i] == 0 and self.player_matrix()[2][i] == 0 and self.player_matrix()[3][i] == 0 and self.player_matrix()[4][i] == 0:
+                        blk_cx.append(i)
+                        return self.player_matrix()[1][i]
+                    elif self.player_matrix()[1][i] == 0 and self.player_matrix()[2][i] == 0 and self.player_matrix()[3][i] == 0 and self.player_matrix()[4][i] == 0:
+                        blk_cx.append(i)
+                        return self.player_matrix()[0][i]
+                    elif self.player_matrix()[0][i] == 0 and self.player_matrix()[1][i] == 0 and self.player_matrix()[2][i] == 0:
+                        return self.player_matrix()[4][i]
+                    elif self.player_matrix()[0][i] == 0 and self.player_matrix()[1][i] == 0 and self.player_matrix()[3][i] == 0:
+                        return self.player_matrix()[3][i]
+                    elif self.player_matrix()[0][i] == 0 and self.player_matrix()[1][i] == 0 and self.player_matrix()[4][i] == 0:
+                        return self.player_matrix()[2][i]
+                    elif self.player_matrix()[0][i] == 0 and self.player_matrix()[2][i] == 0 and self.player_matrix()[3][i] == 0:
+                        return self.player_matrix()[4][i]
+                    elif self.player_matrix()[0][i] == 0 and self.player_matrix()[2][i] == 0 and self.player_matrix()[4][i] == 0:
+                        return self.player_matrix()[3][i]
+                    elif self.player_matrix()[0][i] == 0 and self.player_matrix()[3][i] == 0 and self.player_matrix()[4][i] == 0:
+                        return self.player_matrix()[1][i]
+                    elif self.player_matrix()[1][i] == 0 and self.player_matrix()[2][i] == 0 and self.player_matrix()[3][i] == 0:
+                        return self.player_matrix()[4][i]
+                    elif self.player_matrix()[1][i] == 0 and self.player_matrix()[2][i] == 0 and self.player_matrix()[4][i] == 0:
+                        return self.player_matrix()[3][i]
+                    elif self.player_matrix()[2][i] == 0 and self.player_matrix()[3][i] == 0 and self.player_matrix()[4][i] == 0:
+                        return self.player_matrix()[0][i]
+                    elif self.player_matrix()[0][i] == 0 and self.player_matrix()[1][i] == 0:
+                        return self.player_matrix()[3][i]
+                    elif self.player_matrix()[0][i] == 0 and self.player_matrix()[2][i] == 0:
+                        return self.player_matrix()[3][i]
+                    elif self.player_matrix()[0][i] == 0 and self.player_matrix()[3][i] == 0:
+                        return self.player_matrix()[4][i]
+                    elif self.player_matrix()[0][i] == 0 and self.player_matrix()[4][i] == 0:
+                        return self.player_matrix()[2][i]
+                    elif self.player_matrix()[1][i] == 0 and self.player_matrix()[2][i] == 0:
+                        return self.player_matrix()[3][i]
+                    elif self.player_matrix()[1][i] == 0 and self.player_matrix()[3][i] == 0:
+                        return self.player_matrix()[4][i]
+                    elif self.player_matrix()[1][i] == 0 and self.player_matrix()[4][i] == 0:
+                        return self.player_matrix()[0][i]
+                    elif self.player_matrix()[2][i] == 0 and self.player_matrix()[3][i] == 0:
+                        return self.player_matrix()[4][i]
+                    elif self.player_matrix()[2][i] == 0 and self.player_matrix()[4][i] == 0:
+                        return self.player_matrix()[0][i]
+                    elif self.player_matrix()[3][i] == 0 and self.player_matrix()[4][i] == 0:
+                        return self.player_matrix()[2][i]
+                    elif self.player_matrix()[0][i] == 0:
+                        return self.player_matrix()[1][i]
+                    elif self.player_matrix()[1][i] == 0:
+                        return self.player_matrix()[2][i]
+                    elif self.player_matrix()[2][i] == 0:
+                        return self.player_matrix()[3][i]
+                    elif self.player_matrix()[3][i] == 0:
+                        return self.player_matrix()[4][i]
+                    elif self.player_matrix()[4][i] == 0:
+                        return self.player_matrix()[0][i]
+                else:
+                    return np.random.choice(self.player_array,1)[0]
+                # end col check
 #function to clear screen
 def clear(): 
     # for windows 
@@ -260,17 +440,20 @@ def play_game(mach_bool,NUM_PLAYERS,GAME_PLAYERS):
     sleep(2)
     while(len(VICTORY_LIST) <= NUM_PLAYERS - 1):
         i = 0
-        while(i < NUM_PLAYERS and len(VICTORY_LIST) <= NUM_PLAYERS - 1):
+        while(i < NUM_PLAYERS and len(VICTORY_LIST) <= NUM_PLAYERS - 1):  
             if i not in VICTORY_LIST:
                 clear()
                 print("[INFO]","Player-->",GAME_PLAYERS[i].player_name," PLAYER ID-->",i," chance-->")
                 GAME_PLAYERS[i].take_chance(NUM_PLAYERS,GAME_PLAYERS)
                 grid_show(GAME_PLAYERS[i].player_matrix())
                 check_bingo(VICTORY_LIST,NUM_PLAYERS,GAME_PLAYERS) #--> checks if player won
+                if len(VICTORY_LIST) == NUM_PLAYERS - 1:
+                    display_results(VICTORY_LIST,GAME_PLAYERS)
+                    sleep(8)
+                    mainmenu()
                 sleep(5)
-            i = i + 1
+            i = i + 1     
     sleep(5)
-
     mainmenu() # jumps to main-menu fun [recursive]
 
 def check_bingo(VICTORY_LIST,NUM_PLAYERS,GAME_PLAYERS):
@@ -306,7 +489,7 @@ def check_bingo(VICTORY_LIST,NUM_PLAYERS,GAME_PLAYERS):
                         VICTORY_LIST.append(player_id)
         
         if len(VICTORY_LIST) == NUM_PLAYERS - 1:
-                display_results(VICTORY_LIST,GAME_PLAYERS) #--> result display 
+                #--> result display 
 
 if __name__ == "__main__":
     mainmenu()
