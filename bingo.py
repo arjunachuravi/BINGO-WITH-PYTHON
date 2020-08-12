@@ -80,10 +80,12 @@ class player:
         choose_c = False
 
         results = [ np.count_nonzero(self.player_matrix() == 0,axis=1), np.count_nonzero(self.player_matrix() == 0,axis=0) ]
-        if results[0][np.argmax(results[0])] == 5:
-            results[0][np.argmax(results[0])] = -1
-        if results[1][np.argmax(results[1])] == 5:
-            results[1][np.argmax(results[1])] = -1 
+        
+        for i in range(5):
+            if results[0][i] == 5:
+                results[0][i] = -1
+            if results[1][i] == 5:
+                results[1][i] = -1  
                 
         if max(results[0]) == max(results[1]):
             if self.alternator == True:
@@ -488,8 +490,5 @@ def check_bingo(VICTORY_LIST,NUM_PLAYERS,GAME_PLAYERS):
                     if GAME_PLAYERS[player_id].player_passbook == 5:
                         VICTORY_LIST.append(player_id)
         
-        if len(VICTORY_LIST) == NUM_PLAYERS - 1:
-                #--> result display 
-
 if __name__ == "__main__":
     mainmenu()
